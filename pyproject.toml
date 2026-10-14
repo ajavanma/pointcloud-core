@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pointcloud-core"
+dynamic = ["version"]
+description = "NumPy point-cloud validation, deterministic voxelization, and original-point mappings"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Arash Javanmardi"}]
+dependencies = ["numpy>=1.26.4,<3"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Repository = "https://github.com/ajavanma/pointcloud-core"
+Issues = "https://github.com/ajavanma/pointcloud-core/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+pointcloud_core = ["py.typed"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pointcloud_core._version.__version__"}
