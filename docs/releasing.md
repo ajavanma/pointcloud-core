@@ -68,3 +68,17 @@ blocks force pushes/deletions and applies to administrators. Required review
 count is zero to allow a solo maintainer to merge a tested PR. Before accepting
 external PRs, require approval for all external contributors' workflow runs and
 keep repository token defaults read-only.
+
+## Private staging status (2026-10-14)
+
+Both repositories remain private. Squash-only merges, automatic branch cleanup,
+read-only Actions tokens without PR review approval, and dependency alerts are
+configured. GitHub rejected protected branches, secret scanning, private
+vulnerability reporting, external-contributor workflow approval, and required
+environment reviewers under the current private-repository eligibility. These
+controls remain pending; workflow environment names alone do not enforce review.
+The public-only publication guard prevents release dispatches in this state.
+
+After an explicitly authorized visibility change, apply and verify the prepared
+controls, configure protected release environments and immutable release tags,
+and enable Python CodeQL default setup in Security settings before publishing.
