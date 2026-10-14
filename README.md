@@ -4,9 +4,11 @@ NumPy primitives for validating point clouds, aggregating points into voxels,
 and mapping voxel results back to the original points. No GPU, training
 framework, command-line interface, or dataset format is required.
 
-The project is in private development at version `0.1.0.dev0`. It has not been
-published to PyPI; install from a local checkout for now. The API is provisional
-until the first supported release.
+Version `0.1.0` is prepared for the first release. The source is public; the
+package has not yet been published to PyPI. Install from a local checkout
+while the publisher is being configured. See the
+[release notes](https://github.com/ajavanma/pointcloud-core/blob/main/docs/releases/0.1.0.md)
+and [API compatibility policy](https://github.com/ajavanma/pointcloud-core/blob/main/docs/api.md#compatibility-policy).
 
 ```sh
 python -m venv .venv
@@ -14,7 +16,8 @@ source .venv/bin/activate
 python -m pip install .
 ```
 
-Python 3.11 or later and NumPy 1.26.4 or later (below 3) are required.
+Python 3.11 or later and NumPy 1.26.4 or later (below 3) are required. CI covers
+Python 3.11 and 3.12 with NumPy 1.26.4 and the latest NumPy 2.x.
 
 ## Example
 
@@ -63,8 +66,9 @@ they cannot accidentally index the final voxel during reconstruction.
   implementation, and floating reductions are not promised to be bit-identical
   across arbitrary input permutations or NumPy versions.
 
-See the [API reference](docs/api.md), [contribution guide](CONTRIBUTING.md), and
-[release plan](docs/releasing.md).
+See the [API reference](https://github.com/ajavanma/pointcloud-core/blob/main/docs/api.md),
+[contribution guide](https://github.com/ajavanma/pointcloud-core/blob/main/CONTRIBUTING.md), and
+[release plan](https://github.com/ajavanma/pointcloud-core/blob/main/docs/releasing.md).
 
 ## Relationship to PointCloud Workflows
 
@@ -73,4 +77,5 @@ The numerical methods were extracted and generalized from
 PointCloud Core owns only in-memory array operations. PCW owns dataset
 manifests, file readers, model execution, checkpoints, and run artifacts. PCW
 does not yet depend on this unpublished library; integration will follow a
-tested release. The original MIT attribution is retained in [LICENSE](LICENSE).
+tested release. The original MIT attribution is retained in
+[LICENSE](https://github.com/ajavanma/pointcloud-core/blob/main/LICENSE).
