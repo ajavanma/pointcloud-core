@@ -1,84 +1,108 @@
 # Release preparation
 
-This repository and package remain private/unpublished until an explicit
-publication decision. The selected distribution name is `pointcloud-core` and
-the import name is `pointcloud_core`. The name is not reserved by this source
-tree. PyPI's project JSON endpoint returned 404 on 2026-10-14; recheck when
-registering a publisher.
+The public source repository prepares version **0.1.0** of distribution
+`pointcloud-core`, imported as `pointcloud_core`. It has not yet been published
+to PyPI. The package name is not reserved by this repository; PyPI's project
+JSON endpoint returned 404 on 2026-10-14. Register and verify the publisher
+before creating a release tag or requesting publication.
 
-1. Review the provisional API and test the built wheel outside the checkout.
-   Run the minimum NumPy and current NumPy test jobs; inspect both distribution
-   archives for unintended files.
-2. Set a supported release version and document API/numerical changes in
-   `CHANGELOG.md`. Preserve the MIT notice. This repository contains no research
-   images, datasets, model weights, or copied repository history.
-3. Approve the repository visibility change separately. Inspect the offline
-   preview from `python scripts/apply-public-settings.py`. Once the repository
-   is public, an administrator can run it with `--apply` to configure and verify
-   protected main, the four Python/NumPy CI checks, secret scanning, push
-   protection, dependency alerts, and private vulnerability reporting. The
-   script refuses private or unintended repositories and never changes
-   visibility. It stops on a failed setting; earlier applied settings remain.
-4. Set up a repository/workflow/environment-scoped
-   [PyPI Trusted Publisher](https://docs.pypi.org/trusted-publishers/) for project
-   `pointcloud-core`, owner `ajavanma`, repository `pointcloud-core`, workflow
-   `release.yml`, and environment `pypi`. Account setup is still required;
-   this file does not reserve the package name. Create the GitHub `pypi`
-   environment with `@ajavanma` as required reviewer and deployments restricted
-   to tags matching `v*`. Leave prevention of self-review disabled for the
-   solo-maintainer approval step. Protect version tags from modification and
-   deletion. Trusted Publishing uses short-lived OIDC credentials; no permanent
-   upload token is needed.
-5. Publish a tested immutable version only after explicit release approval.
-   Verify installation from the intended index in a fresh environment. No
-   package or credentials have been published by this preparation.
-6. Integrate the published library into PointCloud Workflows through a narrow
-   adapter with array-parity tests. PCW's artifact schemas stay in PCW. Do not
-   add an unresolved package-index dependency while this library is unpublished.
+The first release contains only NumPy array primitives. See the
+[release notes](releases/0.1.0.md) and [API compatibility policy](api.md#compatibility-policy).
+It contains no research images, datasets, model weights, copied Git history,
+file readers, model frameworks, or PCW artifact schemas.
 
-Documentation currently lives in this repository. A separate public docs host
-is optional for the initial small API; choose and configure one at launch if
-needed. Existing RPTU documentation is not this library's documentation site.
+## Maintainer checklist
 
-## Manual package workflow
+1. Review the API and numerical changes in `CHANGELOG.md`, preserve the MIT
+   attribution, and set the release version in
+   `src/pointcloud_core/_version.py`. Verify both the source archive and wheel
+   metadata, contents, and license. Run the built wheel outside the checkout
+   against minimum NumPy 1.26.4 and current NumPy 2.x.
+2. Merge the release PR after all four required Python/NumPy checks pass. Run
+   **Prepare or publish Python package** on `main` with `publish` left **false**.
+   This rehearses the build, metadata validation, and wheel tests and retains
+   the resulting distributions for seven days. It does not start the publish
+   job, request environment approval, or grant OIDC credentials.
+   Prepare an unpublished GitHub release draft with these tested distributions
+   attached for review. Keep the draft unpublished and leave the version tag
+   uncreated until publication is authorized.
+3. Configure a [PyPI Trusted Publisher](https://docs.pypi.org/trusted-publishers/)
+   for project `pointcloud-core`, owner `ajavanma`, repository `pointcloud-core`,
+   workflow `release.yml`, and environment `pypi`. For a new PyPI project, use a
+   pending publisher. Provider-side setup is still pending; a workflow file
+   alone does not register a publisher or reserve a project name. Trusted
+   Publishing uses short-lived OIDC credentials, with no permanent upload token.
+4. Verify GitHub's `pypi` environment requires `@ajavanma` approval and restricts
+   deployments to tags matching `v*`. Keep prevention of self-review disabled
+   for this solo-maintainer approval step. Verify version tags cannot be
+   modified or deleted. These settings are separate from the workflow file.
+5. After an explicit publication decision, create immutable tag `v0.1.0` on the
+   reviewed release commit. Dispatch **Prepare or publish Python package** on
+   that tag with `publish` set **true**. The workflow rebuilds and tests the
+   distributions, then waits for `pypi` environment approval before publishing
+   with attestations. Only the publish job has OIDC permission.
+6. Verify a fresh installation from the intended index and refresh the draft's
+   wheel and source archive from the final successful publishing run. That run
+   rebuilds the distributions, so the preparation artifacts must not be assumed
+   byte-identical. Verify their checksums against the PyPI files before
+   publishing the GitHub release; immutable releases prevent replacing assets
+   afterwards. Record the published release and checksums, and update the
+   README and release status. Never move a published tag or reuse a version.
+   If a publish partially fails, inspect the index before retrying; the workflow
+   does not silently skip existing files.
 
-The prepared `.github/workflows/release.yml` has only a manual dispatch trigger.
-It refuses private repositories, unintended repository names, branch refs,
-development versions, tags that do not exactly match `v<package version>`, and
-commits outside `main`. Publishing requires a non-development version in
-`src/pointcloud_core/_version.py` and the corresponding immutable tag.
+The destination is [PyPI: pointcloud-core](https://pypi.org/project/pointcloud-core/).
+It remains a planned destination until the first authorized publication succeeds.
+Documentation lives in this repository; no separate docs host is required for
+this initial API. The original RPTU documentation is a separate project.
 
-After the release PR passes all four required CI jobs and merges, create the
-version tag on the reviewed commit and dispatch **Publish Python package** on
-that tag. The workflow builds the source archive and wheel, checks package
-metadata, and tests the built wheel outside the checkout against NumPy 1.26.4
-and current NumPy 2.x. The later `pypi` job downloads the tested distributions
-and publishes them with attestations only after environment approval. Only
-that job has OIDC permission; pull-request CI has read-only permissions.
+## Workflow guards
 
-PyPI's target is `https://pypi.org/project/pointcloud-core/`. It is a planned
-destination until the first authorized publication succeeds. Verify a fresh
-installation from that index afterwards. Never move a published tag or reuse
-a version. If a publish partially fails, inspect the index before retrying;
-the workflow does not silently skip existing files.
+`.github/workflows/release.yml` has only a manual dispatch trigger and defaults
+`publish` to false. Both modes refuse a private or unintended repository and
+require the selected commit to be on `main`'s history. Preparation accepts
+`main` or an exact version tag; publishing requires an exact `v<package version>`
+tag. Development and local versions are refused. Neither mode creates tags or
+GitHub releases.
 
-The branch policy requires PRs, all four up-to-date matrix checks from the
-GitHub Actions application, linear history, and resolved conversations. It
-blocks force pushes/deletions and applies to administrators. Required review
-count is zero to allow a solo maintainer to merge a tested PR. Before accepting
-external PRs, require approval for all external contributors' workflow runs and
-keep repository token defaults read-only.
+The workflow builds a source archive and a wheel from that archive, checks them
+with `twine check --strict`, and tests the installed wheel outside the checkout
+against NumPy 1.26.4 and current NumPy 2.x. Publishing downloads those same tested
+distributions. Pull-request CI and the build job have read-only repository
+permissions. Build-only dispatch skips the publish job entirely.
 
-## Private staging status (2026-10-14)
+## Repository controls
 
-Both repositories remain private. Squash-only merges, automatic branch cleanup,
-read-only Actions tokens without PR review approval, and dependency alerts are
-configured. GitHub rejected protected branches, secret scanning, private
-vulnerability reporting, external-contributor workflow approval, and required
-environment reviewers under the current private-repository eligibility. These
-controls remain pending; workflow environment names alone do not enforce review.
-The public-only publication guard prevents release dispatches in this state.
+On 2026-10-14, the repository was made public and its branch, security, and
+external-contributor controls below were applied and verified. The `pypi`
+environment requires `@ajavanma` review, allows self-review for the sole
+maintainer, and accepts only `v*` tags. An active tag ruleset blocks updates and
+deletion of `v*` tags with no bypass actors. PyPI's provider-side Trusted
+Publisher still needs registration before publication. Immutable GitHub
+releases are enabled, protecting release assets after publication while
+allowing an unpublished draft to be reviewed and refreshed.
 
-After an explicitly authorized visibility change, apply and verify the prepared
-controls, configure protected release environments and immutable release tags,
-and enable Python CodeQL default setup in Security settings before publishing.
+The maintained public-repository configuration is previewed with
+`python scripts/apply-public-settings.py` and applied by an administrator with
+`--apply`. The script requires this repository to already be public and never
+changes visibility or publishes anything. It stops on a failed setting; earlier
+applied settings remain. It verifies protected `main`, the four up-to-date CI
+checks from the GitHub Actions application, secret scanning, push protection,
+dependency alerts, private vulnerability reporting, and approval for all
+external contributors' workflow runs.
+
+The branch policy requires pull requests, linear history, resolved conversations,
+and forbids force pushes and deletions, including for administrators. Required
+review count is zero so a solo maintainer can merge a tested PR. Repository
+settings use squash-only merges, automatic branch cleanup, and read-only
+Actions tokens without PR-review permission. The initial Python and GitHub
+Actions CodeQL scans completed with zero findings. The active `main` CodeQL
+ruleset requires analysis, blocks security findings at high severity or above
+and code-quality findings at error severity, and has no bypass actors.
+
+## Integration into PointCloud Workflows
+
+Integrate the published library through a narrow adapter with array-parity
+tests after version 0.1.0 is available. PCW still owns its manifests, readers,
+model execution, checkpoints, and artifact schemas. Do not add an unresolved
+package-index dependency while this library is unpublished.

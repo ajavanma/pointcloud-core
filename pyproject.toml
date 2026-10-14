@@ -13,7 +13,7 @@ license-files = ["LICENSE"]
 authors = [{name = "Arash Javanmardi"}]
 dependencies = ["numpy>=1.26.4,<3"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -22,6 +22,8 @@ classifiers = [
 ]
 
 [project.urls]
+Documentation = "https://github.com/ajavanma/pointcloud-core/blob/main/docs/api.md"
+Changelog = "https://github.com/ajavanma/pointcloud-core/blob/main/CHANGELOG.md"
 Repository = "https://github.com/ajavanma/pointcloud-core"
 Issues = "https://github.com/ajavanma/pointcloud-core/issues"
 

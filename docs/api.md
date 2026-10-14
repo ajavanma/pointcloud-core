@@ -3,6 +3,23 @@
 All public imports come from `pointcloud_core`. Invalid inputs raise
 `PointCloudError`, a subclass of `ValueError`.
 
+## Compatibility policy
+
+The supported API for version 0.1 is the top-level exports `PointCloud`,
+`PointCloudError`, `validate_cloud`, `LabelMap`, `VoxelizedCloud`, `voxelize`,
+`lift_voxel_values`, and `__version__`, together with the fields, signatures,
+shapes, dtypes, and semantics documented below. Import these names from
+`pointcloud_core`; helper functions and internal module layouts are not part
+of the public contract. Exact error-message text is not stable.
+
+Version 0.x is an early API. Patch releases preserve the documented contract;
+minor releases may change it and will describe any migration in the changelog.
+Consumers should constrain the minor series they have tested, such as
+`pointcloud-core>=0.1,<0.2` after publication. Changes that reject previously
+accepted invalid input or correct numerical errors are bug fixes. The library
+does not define file formats, serialized object compatibility, or PCW artifact
+schemas. Cross-version bitwise equality of floating reductions is not promised.
+
 ## PointCloud and validation
 
 `PointCloud(coords, features=None, labels=None, point_indices=None)` stores

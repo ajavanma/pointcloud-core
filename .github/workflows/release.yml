@@ -1,7 +1,12 @@
-name: Publish Python package
+name: Prepare or publish Python package
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the tested distributions to PyPI (requires a release tag and environment approval)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,14 +20,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Require the public project and a release tag
+      - name: Require the public project and an allowed release ref
         env:
           PROJECT: ${{ github.repository }}
           PRIVATE: ${{ github.event.repository.private }}
+          PUBLISH: ${{ inputs.publish }}
         run: |
           test "$PROJECT" = ajavanma/pointcloud-core
           test "$PRIVATE" = false
-          case "$GITHUB_REF" in refs/tags/v*) ;; *) echo 'Select a v<version> tag.' >&2; exit 1 ;; esac
+          if [ "$PUBLISH" = true ]; then
+            case "$GITHUB_REF" in refs/tags/v*) ;; *) echo 'Publishing requires a v<version> tag.' >&2; exit 1 ;; esac
+          else
+            case "$GITHUB_REF" in refs/heads/main|refs/tags/v*) ;; *) echo 'Preparation requires main or a version tag.' >&2; exit 1 ;; esac
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
@@ -31,6 +41,8 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check the release version and main ancestry
+        env:
+          PUBLISH: ${{ inputs.publish }}
         run: |
           git fetch --no-tags origin main:refs/remotes/origin/main
           git merge-base --is-ancestor HEAD origin/main
@@ -41,8 +53,14 @@ jobs:
           from packaging.version import Version
           version = runpy.run_path('src/pointcloud_core/_version.py')['__version__']
           parsed = Version(version)
-          if parsed.is_devrelease or parsed.local or os.environ['GITHUB_REF'] != 'refs/tags/v' + version:
-              raise SystemExit('Tag must exactly match a non-development package version.')
+          if parsed.is_devrelease or parsed.local:
+              raise SystemExit('Select a non-development package version.')
+          ref = os.environ['GITHUB_REF']
+          matching_tag = ref == 'refs/tags/v' + version
+          if os.environ['PUBLISH'] == 'true' and not matching_tag:
+              raise SystemExit('Publishing tag must exactly match the package version.')
+          if ref.startswith('refs/tags/') and not matching_tag:
+              raise SystemExit('Preparation tag must exactly match the package version.')
           PY
       - name: Build and inspect both distributions
         run: |
@@ -65,6 +83,7 @@ jobs:
           retention-days: 7
 
   publish:
+    if: ${{ inputs.publish }}
     needs: build
     runs-on: ubuntu-24.04
     environment:
