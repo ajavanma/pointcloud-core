@@ -75,7 +75,17 @@ See the [API reference](https://github.com/ajavanma/pointcloud-core/blob/main/do
 The numerical methods were extracted and generalized from
 [PointCloud Workflows](https://github.com/ajavanma/PointCloud-Workflows).
 PointCloud Core owns only in-memory array operations. PCW owns dataset
-manifests, file readers, model execution, checkpoints, and run artifacts. PCW
-does not yet depend on this unpublished library; integration will follow a
-tested release. The original MIT attribution is retained in
+manifests, file readers, model execution, checkpoints, and run artifacts.
+
+PCW uses Core through a compatibility adapter, pinned to the prepared `0.1.0`
+source revision `5c28a700c30aee6186cfe30f6cd74708289f0743` with an archive hash
+while the first PyPI release is pending. The adapter preserves PCW's validation
+errors, artifact schemas, and historical divide-before-sum feature means. Direct
+Core callers use the scaled-mean reduction documented in the API reference.
+See the [integration guide](https://github.com/ajavanma/PointCloud-Workflows/blob/main/docs/core-integration.md)
+and [standalone Core example](https://github.com/ajavanma/PointCloud-Workflows/blob/main/examples/core_roundtrip.py).
+The example needs only NumPy and Core and demonstrates preserved point IDs,
+ignored labels, invalid rows, and prediction lifting.
+
+The original MIT attribution is retained in
 [LICENSE](https://github.com/ajavanma/pointcloud-core/blob/main/LICENSE).

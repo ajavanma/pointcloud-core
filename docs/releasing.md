@@ -102,7 +102,16 @@ and code-quality findings at error severity, and has no bypass actors.
 
 ## Integration into PointCloud Workflows
 
-Integrate the published library through a narrow adapter with array-parity
-tests after version 0.1.0 is available. PCW still owns its manifests, readers,
-model execution, checkpoints, and artifact schemas. Do not add an unresolved
-package-index dependency while this library is unpublished.
+PCW uses a narrow adapter with compatibility tests, pinned to the prepared
+`0.1.0` source revision `5c28a700c30aee6186cfe30f6cd74708289f0743` and its archive
+hash. This supports integration before PyPI publication without depending on an
+unpublished package-index version. PCW still owns its manifests, readers, model
+execution, checkpoints, and artifact schemas. Its adapter retains the historical
+divide-before-sum feature means; Core's public numerical API keeps its scaled
+mean. See the [integration guide](https://github.com/ajavanma/PointCloud-Workflows/blob/main/docs/core-integration.md)
+and [standalone example](https://github.com/ajavanma/PointCloud-Workflows/blob/main/examples/core_roundtrip.py).
+
+After Core is published, replace PCW's transitional source dependency with the
+tested package-index version, regenerate PCW's lockfile, and rerun compatibility
+checks before publishing PCW. Its release workflow rejects direct URL
+dependencies.
